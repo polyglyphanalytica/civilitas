@@ -5030,8 +5030,9 @@ function yearToSlider(yr){
 function civPt(c){
   if(!c)return[500,260];
   if(!window._proj)return[c.x||500,c.y||260];
-  const pt=window._proj([c.lon,c.lat]);
-  return pt||[c.x||500,c.y||260];
+  if(typeof c.lon!=='number'||typeof c.lat!=='number')return[c.x||500,c.y||260];
+  try{const pt=window._proj([c.lon,c.lat]);return pt&&isFinite(pt[0])&&isFinite(pt[1])?pt:[c.x||500,c.y||260];}
+  catch(e){return[c.x||500,c.y||260];}
 }
 
 function renderMap(){
@@ -5055,34 +5056,38 @@ function renderMap(){
   });
   document.getElementById('conn-layer').innerHTML=cl;
 
-  let ml='',ll='';
-  CIVS.forEach(c=>{
+  // TWO-PASS: rings first (all), then dots on top (all) — prevents hit area overlap
+  let rings='', dots='', ll='';
+  const civData=CIVS.map(c=>{
     const on=ids.has(c.id);
     const isSel=sel&&sel.id===c.id;
-    // Heritage highlighting
     const heritageIds=mode==='heritage'&&heritageRegion?new Set(HERITAGE_REGIONS[heritageRegion]||[]):null;
     const isHeritage=heritageIds&&heritageIds.has(c.id);
-    // In heritage mode, also show non-active heritage civs at low opacity
     const heritageInactive=isHeritage&&!on;
-    // What-if dimming: dim civs that lose transmissions
     const isWhatifLost=whatifCiv&&whatifCiv!==c.id&&
       TRANSMISSIONS.some(t=>t.to===c.id&&t.from===whatifCiv);
     const womenCount=(WOMEN[c.id]||[]).length;
     const mcol=herstory?(isSel?'#f0d060':womenCount?'#c060a0':'#884468'):isSel?'#f0d060':isHeritage?'#4a9fc0':'#e8251a';
     const op=on?(isWhatifLost?.2:1):(heritageInactive?.35:0.06);
-    const tabIdx=on?'0':'-1';
     const [cx,cy]=civPt(c);
-    // Decorative rings (small, non-intercepting) + pulse
-    ml+=`<g opacity="${op}" pointer-events="none">
+    return {c,on,isSel,mcol,op,cx,cy};
+  });
+  // Pass 1: decorative rings — pointer-events:none, never intercept clicks
+  civData.filter(Boolean).forEach(({c,on,isSel,mcol,op,cx,cy})=>{
+    rings+=`<g opacity="${op}" pointer-events="none">
       <circle cx="${cx}" cy="${cy}" r="16" fill="none" stroke="${mcol}" stroke-width=".5" opacity=".15"/>
       <circle cx="${cx}" cy="${cy}" r="10" fill="${mcol}" fill-opacity=".06"/>
       ${on?`<circle cx="${cx}" cy="${cy}" r="6" fill="${mcol}" opacity=".45">
         <animate attributeName="r" values="6;16;6" dur="2.8s" repeatCount="indefinite"/>
         <animate attributeName="opacity" values=".45;0;.45" dur="2.8s" repeatCount="indefinite"/>
       </circle>`:''}
-    </g>
-    ${on
-      ?`<g role="button" tabindex="0" style="cursor:pointer"
+    </g>`;
+  });
+  // Pass 2: clickable dots — all on top of all rings; selected civ last (topmost)
+  const sorted=[...civData].filter(Boolean).sort((a,b)=>a.isSel?1:b.isSel?-1:0);
+  sorted.forEach(({c,on,isSel,mcol,op,cx,cy})=>{
+    if(on){
+      dots+=`<g role="button" tabindex="0" style="cursor:pointer"
           aria-label="${c.nm} — click to explore"
           onclick="civClick('${c.id}')"
           onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();civClick('${c.id}')}"
@@ -5091,15 +5096,15 @@ function renderMap(){
           <circle cx="${cx}" cy="${cy}" r="${isSel?9:7}"
             fill="${mcol}" filter="url(#glow${isSel?'2':''})"
           />
-        </g>`
-      :`<circle cx="${cx}" cy="${cy}" r="4" fill="${mcol}" opacity=".12" pointer-events="none"/>`
-    }`;
-    // Labels go into separate non-interactive layer above everything
-    if(on) ll+=`<text x="${cx}" y="${cy+26}" font-family="Cinzel,serif" font-size="11"
-      letter-spacing="1" fill="${isSel?'#f0d060':'#e8251a'}"
-      text-anchor="middle" pointer-events="none">${c.nm}</text>`;
+        </g>`;
+      ll+=`<text x="${cx}" y="${cy+26}" font-family="Cinzel,serif" font-size="11"
+        letter-spacing="1" fill="${isSel?'#f0d060':'#e8251a'}"
+        text-anchor="middle" pointer-events="none">${c.nm}</text>`;
+    } else {
+      dots+=`<circle cx="${cx}" cy="${cy}" r="4" fill="${mcol}" opacity=".12" pointer-events="none"/>`;
+    }
   });
-  document.getElementById('mark-layer').innerHTML=ml;
+  document.getElementById('mark-layer').innerHTML=rings+dots;
   document.getElementById('label-layer').innerHTML=ll;
 }
 
