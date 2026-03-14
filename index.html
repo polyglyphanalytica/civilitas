@@ -5233,7 +5233,7 @@ function renderDrawer(){
         [1000, 'Peak diversity','More simultaneous civilizations than any other moment'],
         [1347, 'Black Death arrives','The Mongol trade network carries plague from Central Asia to Europe'],
       ].map(([yr,title,desc])=>`
-        <div onclick="setYear(${yr});document.getElementById('tl').value=${yr};"
+        <div onclick="setYear(${yr});"
           style="padding:8px 0;border-bottom:1px solid var(--bdr2);cursor:pointer;transition:opacity .15s"
           onmouseover="this.style.opacity='.7'" onmouseout="this.style.opacity='1'">
           <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:3px">
@@ -5308,7 +5308,7 @@ function setYear(y){
   year=parseInt(y);
   const sl=document.getElementById('tl');
   const sliderVal=yearToSlider(year);
-  sl.value=sliderVal;
+  if(sl.value!=sliderVal) sl.value=sliderVal;
   const pct=sliderVal/10; // 0-1000 → 0-100%
   document.getElementById('tl-thumb').style.left=pct+'%';
   updateTlFill(pct);
@@ -5364,7 +5364,7 @@ function init(){
   const total=2024-(-65000);
   document.getElementById('era-bands').innerHTML=eraDefs.map(e=>`<div class="era-b" style="width:${(e.e-e.s)/total*100}%">${e.l}</div>`).join('');
   renderDensityBar();
-  document.getElementById('tl').addEventListener('input',e=>setYear(e.target.value));
+  document.getElementById('tl').addEventListener('input',e=>setYear(sliderToYear(e.target.value)));
   decodeState();
   renderDrawer();
   document.getElementById('tl').value=yearToSlider(year);
