@@ -5072,26 +5072,27 @@ function renderMap(){
     const op=on?(isWhatifLost?.2:1):(heritageInactive?.35:0.06);
     const tabIdx=on?'0':'-1';
     const [cx,cy]=civPt(c);
-    // Decorative rings + pulse — pointer-events:none so they never intercept taps
+    // Decorative rings (small, non-intercepting) + pulse
     ml+=`<g opacity="${op}" pointer-events="none">
-      <circle cx="${cx}" cy="${cy}" r="28" fill="none" stroke="${mcol}" stroke-width=".5" opacity=".12"/>
-      <circle cx="${cx}" cy="${cy}" r="18" fill="none" stroke="${mcol}" stroke-width=".5" opacity=".22"/>
-      <circle cx="${cx}" cy="${cy}" r="16" fill="${mcol}" fill-opacity=".07"/>
-      ${on?`<circle cx="${cx}" cy="${cy}" r="8" fill="${mcol}" opacity=".55">
-        <animate attributeName="r" values="8;30;8" dur="2.8s" repeatCount="indefinite"/>
-        <animate attributeName="opacity" values=".55;0;.55" dur="2.8s" repeatCount="indefinite"/>
+      <circle cx="${cx}" cy="${cy}" r="16" fill="none" stroke="${mcol}" stroke-width=".5" opacity=".15"/>
+      <circle cx="${cx}" cy="${cy}" r="10" fill="${mcol}" fill-opacity=".06"/>
+      ${on?`<circle cx="${cx}" cy="${cy}" r="6" fill="${mcol}" opacity=".45">
+        <animate attributeName="r" values="6;16;6" dur="2.8s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values=".45;0;.45" dur="2.8s" repeatCount="indefinite"/>
       </circle>`:''}
     </g>
     ${on
-      ?`<circle cx="${cx}" cy="${cy}" r="${isSel?11:8}"
-          fill="${mcol}" filter="url(#glow${isSel?'2':''})"
-          style="cursor:pointer"
-          role="button" tabindex="0"
+      ?`<g role="button" tabindex="0" style="cursor:pointer"
           aria-label="${c.nm} — click to explore"
           onclick="civClick('${c.id}')"
           onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();civClick('${c.id}')}"
-        />`
-      :`<circle cx="${cx}" cy="${cy}" r="5" fill="${mcol}" opacity=".15" pointer-events="none"/>`
+          opacity="${op}">
+          <circle cx="${cx}" cy="${cy}" r="${isSel?14:12}" fill="transparent"/>
+          <circle cx="${cx}" cy="${cy}" r="${isSel?9:7}"
+            fill="${mcol}" filter="url(#glow${isSel?'2':''})"
+          />
+        </g>`
+      :`<circle cx="${cx}" cy="${cy}" r="4" fill="${mcol}" opacity=".12" pointer-events="none"/>`
     }`;
     // Labels go into separate non-interactive layer above everything
     if(on) ll+=`<text x="${cx}" y="${cy+26}" font-family="Cinzel,serif" font-size="11"
