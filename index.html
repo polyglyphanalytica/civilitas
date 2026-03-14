@@ -2601,16 +2601,40 @@ function shareState(){
   let url='';
   try{url=window.location.href.split('#')[0]+'#'+encodeState();}
   catch(e){url='#'+encodeState();}
-  if(navigator.clipboard){
-    navigator.clipboard.writeText(url).then(()=>showToast());
-  } else {
-    // fallback
-    const ta=document.createElement('textarea');
-    ta.value=url;ta.style.position='fixed';ta.style.opacity='0';
-    document.body.appendChild(ta);ta.select();
-    document.execCommand('copy');document.body.removeChild(ta);
-    showToast();
+
+  const civName=sel?sel.nm:null;
+  const shareTitle='CIVILITAS — The Human Atlas';
+  const shareText=civName
+    ? `Explore ${civName} on CIVILITAS — 46 civilizations, 65,000 years of human history`
+    : 'CIVILITAS — 46 civilizations, 65,000 years of human history, all in one map';
+
+  // Use native share sheet on devices that support it (iOS, Android, modern desktop)
+  if(navigator.share){
+    navigator.share({title:shareTitle,text:shareText,url:url})
+      .catch(err=>{
+        // User cancelled or share failed — fall back to clipboard silently
+        if(err.name!=='AbortError') copyToClipboard(url);
+      });
+    return;
   }
+  // Desktop fallback: clipboard
+  copyToClipboard(url);
+}
+
+function copyToClipboard(url){
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(url).then(()=>showToast()).catch(()=>legacyCopy(url));
+  } else {
+    legacyCopy(url);
+  }
+}
+
+function legacyCopy(url){
+  const ta=document.createElement('textarea');
+  ta.value=url;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.select();
+  try{document.execCommand('copy');showToast();}catch(e){}
+  document.body.removeChild(ta);
 }
 
 function showToast(){
