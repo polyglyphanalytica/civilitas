@@ -10,14 +10,14 @@
 <meta name="keywords" content="world history map, interactive history, civilizations, ancient history, timeline, cultural history, human atlas, history education, archaeology, anthropology">
 <meta name="author" content="Polyglyph Analytica">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://polyglyph.github.io/civilitas/">
+<link rel="canonical" href="https://polyglyphanalytica.github.io/civilitas/">
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://polyglyph.github.io/civilitas/">
+<meta property="og:url" content="https://polyglyphanalytica.github.io/civilitas/">
 <meta property="og:title" content="CIVILITAS — The Human Atlas">
 <meta property="og:description" content="100 civilizations. 65,000 years. Every idea, technology, and belief system that made the modern world — mapped, connected, and explorable.">
-<meta property="og:image" content="https://polyglyph.github.io/civilitas/og-image.png">
+<meta property="og:image" content="https://polyglyphanalytica.github.io/civilitas/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:site_name" content="CIVILITAS">
@@ -25,10 +25,10 @@
 
 <!-- Twitter / X -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:site" content="@polyglyph">
+<meta name="twitter:site" content="@polyglyphanalytica">
 <meta name="twitter:title" content="CIVILITAS — The Human Atlas">
 <meta name="twitter:description" content="100 civilizations. 65,000 years. Every idea, technology, and belief system that made the modern world — mapped, connected, and explorable.">
-<meta name="twitter:image" content="https://polyglyph.github.io/civilitas/og-image.png">
+<meta name="twitter:image" content="https://polyglyphanalytica.github.io/civilitas/og-image.png">
 
 <!-- Structured Data -->
 <script type="application/ld+json">
@@ -37,7 +37,7 @@
   "@type": "WebApplication",
   "name": "CIVILITAS — The Human Atlas",
   "description": "An interactive world history application exploring 100 civilizations across 65,000 years. Features a real geographic map, continuous timeline, 30 interpretive lenses including Tragedies, Justice, Children, Resistance, Figures, Architecture, Memory, and Body & Mind. Includes a Herstory mode tracing women across all civilizations.",
-  "url": "https://polyglyph.github.io/civilitas/",
+  "url": "https://polyglyphanalytica.github.io/civilitas/",
   "applicationCategory": "EducationalApplication",
   "operatingSystem": "Web Browser",
   "offers": {
@@ -7073,6 +7073,18 @@ document.addEventListener('click',function(e){
 // Close about on Escape
 document.addEventListener('keydown',function(e){
   if(e.key==='Escape'){closeAbout();closeBurger();}
+  if(e.key==='ArrowLeft'||e.key==='ArrowRight'){
+    const tag=document.activeElement&&document.activeElement.tagName;
+    if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT')return;
+    e.preventDefault();
+    const tl=document.getElementById('tl');
+    if(!tl)return;
+    const step=e.shiftKey?10:e.ctrlKey||e.metaKey?50:1;
+    const dir=e.key==='ArrowRight'?1:-1;
+    const newVal=Math.max(0,Math.min(1000,parseInt(tl.value)+dir*step));
+    tl.value=newVal;
+    setYear(sliderToYear(newVal));
+  }
 });
 // Update herstory badge in burger menu when toggled
 const _origToggleHerstory=typeof toggleHerstory==='function'?toggleHerstory:null;
