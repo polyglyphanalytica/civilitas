@@ -146,7 +146,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .theme-btn:hover{background:var(--amber-x);color:var(--amber-b)}
 
 /* ── MAIN LAYOUT ── */
-.main{position:fixed;top:88px;left:0;right:0;bottom:0;display:flex}
+.main{position:fixed;top:52px;left:0;right:0;bottom:0;display:flex}
 .map-c{flex:1;position:relative;overflow:hidden;min-width:0;min-height:0}
 .map-tl-col{display:flex;flex-direction:column;flex:1;min-width:0}
 #wsvg{width:100%;height:100%}
@@ -226,10 +226,7 @@ input.tl-range{position:absolute;top:50%;left:0;width:100%;height:28px;opacity:0
   .logo-t{font-size:16px;letter-spacing:2px}
   .era-y{font-size:18px}
   .era-n{font-size:10px;letter-spacing:1.5px}
-  .mode-bar{height:32px;top:48px}
-  .main{top:80px!important}
-  .mode-btn{font-size:7px;letter-spacing:.5px;gap:2px}
-
+  .main{top:52px!important}
   /* Map takes top ~42%, drawer fixed below it, timeline at bottom */
   .main{
     bottom:0;
@@ -292,18 +289,12 @@ button:focus-visible{outline:2px solid var(--amber-b);outline-offset:2px}
 .skip-link{position:absolute;top:-40px;left:0;background:var(--amber-b);color:var(--bg);padding:8px 16px;z-index:9999;font-family:'Cinzel',serif;font-size:11px;text-decoration:none}
 .skip-link:focus{top:0}
 
-/* ── MODE BAR ── */
-.mode-bar{position:fixed;top:52px;left:0;right:0;z-index:190;display:flex;align-items:stretch;height:36px;background:var(--hdr-bg)}
-.mode-btn{flex:1;background:none;border:none;border-right:1px solid var(--bdr2);padding:0 4px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.8px;color:var(--txt3);cursor:pointer;text-transform:uppercase;transition:all .15s;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:4px}
-.mode-btn:last-child{border-right:none}
-.mode-btn:hover{background:var(--amber-x);color:var(--amber-b)}
-.mode-btn.active{background:var(--amber-x);color:var(--amber-b)}
-.mode-divider{width:1px;background:var(--bdr);flex-shrink:0}
+
 
 /* ── THREAD PANEL ── */
 /* ── THREAD OVERLAY — full-width drop from top ── */
 .thread-panel{
-  position:fixed;top:88px;left:0;right:0;z-index:400;
+  position:fixed;top:52px;left:0;right:0;z-index:400;
   background:var(--panel);
   max-height:0;overflow:hidden;
   transition:max-height .32s cubic-bezier(.4,0,.2,1);
@@ -355,16 +346,6 @@ button:focus-visible{outline:2px solid var(--amber-b);outline-offset:2px}
 .share-toast{position:fixed;bottom:108px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--panel);border:1px solid var(--bdr);padding:8px 18px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.5px;color:var(--amber-b);text-transform:uppercase;border-radius:20px;opacity:0;transition:all .3s;pointer-events:none;z-index:500;white-space:nowrap}
 .share-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* ── RESPONSIVE MODE BAR ── */
-@media(max-width:768px) and (orientation:portrait){
-  .mode-bar{height:34px;padding:0 10px;top:48px}
-  .mode-btn{font-size:8.5px;padding:3px 9px}
-  .main{top:82px!important}
-}
-@media(max-width:900px) and (orientation:landscape){
-  .mode-bar{height:32px}
-  .main{top:84px!important}
-}
 
 /* ── SOUND ── */
 .sound-btn{background:none;border:1px solid var(--bdr);padding:3px 8px;cursor:pointer;font-size:13px;border-radius:3px;color:var(--txt3);transition:all .15s;flex-shrink:0}
@@ -431,9 +412,6 @@ button:focus-visible{outline:2px solid var(--amber-b);outline-offset:2px}
 .hs-no-data{font-size:14px;line-height:1.8;color:var(--txt3);font-style:italic;padding:12px 0}
 .hs-panel-sub{font-size:15px;color:var(--txt3);margin-bottom:16px;font-style:italic;line-height:1.9}
 .hs-panel-hdr{font-family:'Cinzel Decorative',serif;font-size:13px;color:#c060a0;margin-bottom:6px;letter-spacing:1px}
-/* When herstory active, style the mode bar slightly */
-body.herstory .mode-btn.active{background:rgba(192,96,160,.15);color:#c060a0}
-body.herstory .hdr{border-bottom-color:rgba(192,96,160,.3)}
 
 /* ── CLUSTER PICKER ── */
 #cluster-picker{
@@ -503,7 +481,7 @@ body.herstory .hdr{border-bottom-color:rgba(192,96,160,.3)}
   transition:all .15s;padding:0}
 .burger-btn:hover{background:var(--panel2);border-color:var(--amber)}
 .burger-menu{position:absolute;top:calc(100% + 6px);right:0;background:var(--panel);
-  border:1px solid var(--bdr);border-radius:4px;min-width:168px;
+  border:1px solid var(--bdr);border-radius:4px;min-width:196px;
   box-shadow:0 8px 32px var(--shadow);z-index:800;
   display:none;flex-direction:column;overflow:hidden}
 .burger-menu.open{display:flex}
@@ -512,10 +490,14 @@ body.herstory .hdr{border-bottom-color:rgba(192,96,160,.3)}
   font-family:'Cinzel',serif;font-size:12px;letter-spacing:.5px;width:100%;
   transition:background .12s;white-space:nowrap}
 .burger-item:hover,.burger-item:active{background:var(--panel2);color:var(--txt)}
+.burger-item.active,.burger-item.burger-mode.active{background:var(--amber-x);color:var(--amber-b)}
 .burger-item-badge{margin-left:auto;font-size:9px;color:var(--amber-b);
   font-family:'Cinzel',serif;letter-spacing:1px;display:none}
 .burger-item-badge.on{display:inline}
 .burger-divider{height:1px;background:var(--bdr2);margin:2px 0}
+/* Herstory tint on mode items */
+body.herstory .burger-item.burger-mode.active{background:rgba(192,96,160,.12);color:#c060a0}
+body.herstory .hdr{border-bottom-color:rgba(192,96,160,.3)}
 
 /* ── PULL TO REFRESH ── */
 #ptr-indicator{
@@ -569,11 +551,27 @@ body.herstory .hdr{border-bottom-color:rgba(192,96,160,.3)}
         </svg>
       </button>
       <div class="burger-menu" id="burger-menu" role="menu">
+        <button class="burger-item burger-mode active" id="btn-explore" onclick="setMode('explore');closeBurger()" role="menuitem" aria-pressed="true">
+          <span>◉</span><span>Explore</span>
+        </button>
+        <button class="burger-item burger-mode" id="btn-threads" onclick="setMode('threads');closeBurger()" role="menuitem" aria-pressed="false">
+          <span>⟳</span><span>Threads</span>
+        </button>
+        <button class="burger-item burger-mode" id="btn-compare" onclick="setMode('compare');closeBurger()" role="menuitem" aria-pressed="false">
+          <span>⊞</span><span>Compare</span>
+        </button>
+        <button class="burger-item burger-mode" id="btn-whatif" onclick="setMode('whatif');closeBurger()" role="menuitem" aria-pressed="false">
+          <span>⟁</span><span>What If</span>
+        </button>
+        <button class="burger-item burger-mode" id="btn-heritage" onclick="setMode('heritage');closeBurger()" role="menuitem" aria-pressed="false">
+          <span>⌂</span><span>Heritage</span>
+        </button>
         <button class="burger-item" id="menu-herstory" onclick="toggleHerstory();closeBurger()" role="menuitem">
           <span style="font-size:15px">♀</span>
-          <span>Herstory Mode</span>
+          <span>Herstory</span>
           <span class="burger-item-badge" id="herstory-badge"></span>
         </button>
+        <div class="burger-divider"></div>
         <button class="burger-item" id="menu-theme" onclick="toggleTheme();closeBurger()" role="menuitem">
           <span>◑</span>
           <span>Toggle Theme</span>
@@ -588,15 +586,6 @@ body.herstory .hdr{border-bottom-color:rgba(192,96,160,.3)}
   </div>
 </header>
 
-<nav class="mode-bar" role="navigation" aria-label="View modes">
-  <button class="mode-btn active" id="btn-explore" onclick="setMode('explore')" aria-pressed="true">◉ Explore</button>
-  <button class="mode-btn" id="btn-threads" onclick="setMode('threads')" aria-pressed="false">⟳ Threads</button>
-  <button class="mode-btn" id="btn-compare" onclick="setMode('compare')" aria-pressed="false">⊞ Compare</button>
-  <div class="mode-divider"></div>
-  <button class="mode-btn" id="btn-whatif" onclick="setMode('whatif')" aria-pressed="false">⟁ What If</button>
-  <button class="mode-btn" id="btn-heritage" onclick="setMode('heritage')" aria-pressed="false">⌂ Heritage</button>
-  <div class="mode-divider"></div>
-</nav>
 
 <div class="thread-panel" id="thread-panel" role="complementary" aria-label="Concept transmissions">
   <div class="thread-panel-inner">
