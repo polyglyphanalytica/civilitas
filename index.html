@@ -146,8 +146,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .theme-btn:hover{background:var(--amber-x);color:var(--amber-b)}
 
 /* ── MAIN LAYOUT ── */
-.main{position:fixed;top:88px;left:0;right:0;bottom:88px;display:flex}
-.map-c{flex:1;position:relative;overflow:hidden;min-width:0}
+.main{position:fixed;top:88px;left:0;right:0;bottom:0;display:flex}
+.map-c{flex:1;position:relative;overflow:hidden;min-width:0;min-height:0}
+.map-tl-col{display:flex;flex-direction:column;flex:1;min-width:0}
 #wsvg{width:100%;height:100%}
 
 /* ── DESKTOP PANEL ── */
@@ -201,7 +202,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .conn-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
 
 /* ── TIMELINE ── */
-.tl-wrap{position:fixed;bottom:0;left:0;right:0;height:88px;background:var(--tl-bg);border-top:1px solid var(--bdr);padding:8px 20px 14px}
+.tl-wrap{position:relative;height:88px;background:var(--tl-bg);border-top:1px solid var(--bdr);padding:8px 20px 14px;flex-shrink:0}
 .era-bands{display:flex;height:16px;margin-bottom:4px;border-bottom:1px solid var(--bdr2)}
 .era-b{display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.7px;color:var(--txt3);border-left:1px solid var(--bdr2);overflow:hidden;opacity:.7}
 .tl-lbls{display:flex;justify-content:space-between;margin-bottom:5px}
@@ -210,10 +211,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(
 .tl-fill{position:absolute;top:0;left:0;height:100%;background:var(--amber-b);border-radius:1px;pointer-events:none;opacity:.7}
 .tl-thumb{position:absolute;top:50%;width:12px;height:12px;background:var(--amber-b);border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--amber),0 0 20px rgba(232,152,32,.3);pointer-events:none;transition:left .04s linear}
 input.tl-range{position:absolute;top:50%;left:0;width:100%;height:24px;opacity:0;cursor:pointer;transform:translateY(-50%);margin:0;z-index:2}
-.hint{position:absolute;bottom:2px;left:50%;transform:translateX(-50%);font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:var(--hint);pointer-events:none;white-space:nowrap}
+.hint{position:absolute;bottom:2px;left:0;right:0;text-align:center;font-family:'Cinzel',serif;font-size:9px;letter-spacing:1.5px;color:var(--hint);display:flex;align-items:center;justify-content:center;padding:0 8px;white-space:nowrap;overflow:hidden}
+#map-hint-text{pointer-events:none;overflow:hidden;text-overflow:ellipsis}
 
 /* ── SHEET HANDLE ── */
-.sheet-handle{display:none;width:44px;height:5px;background:var(--bdr);border-radius:3px;margin:10px auto 12px;cursor:pointer;flex-shrink:0}
 
 /* ── MOB MAP BUTTON ── */
 .mob-map-btn{display:none}
@@ -232,8 +233,11 @@ input.tl-range{position:absolute;top:50%;left:0;width:100%;height:24px;opacity:0
 
   /* Map takes top ~42%, drawer fixed below it, timeline at bottom */
   .main{
-    bottom:80px;
+    bottom:0;
     flex-direction:column;
+  }
+  .map-tl-col{
+    width:100%;
   }
   .map-c{
     flex:0 0 42vh;
@@ -248,13 +252,11 @@ input.tl-range{position:absolute;top:50%;left:0;width:100%;height:24px;opacity:0
     padding:0 16px 16px;
     border-radius:0;
   }
-  .sheet-handle{display:block}
-
-  .tl-wrap{height:80px;padding:6px 14px 12px}
+  .tl-wrap{height:76px;padding:6px 14px 10px}
   .era-bands{height:14px;margin-bottom:3px}
   .era-b{font-size:7px}
   .tl-lbl{font-size:9px;letter-spacing:.8px}
-  .hint{display:none}
+  .hint{font-size:8px;letter-spacing:.8px}
   .lens-dd-list{max-height:180px}
   .info-txt,.overview-arc{font-size:15px;line-height:1.78}
   .lens-row-lbl{font-size:12px}
@@ -266,8 +268,8 @@ input.tl-range{position:absolute;top:50%;left:0;width:100%;height:24px;opacity:0
   .hdr{padding:6px 14px}
   .logo-t{font-size:15px;letter-spacing:2px}
   .era-y{font-size:15px}
-  .hint{display:none}
-  .tl-wrap{height:72px;padding:5px 14px 10px}
+  .hint{font-size:7px;letter-spacing:.5px;white-space:normal;text-align:center;line-height:1.4}
+  .tl-wrap{height:68px;padding:4px 12px 8px}
   .era-bands{height:12px}
   .era-b{font-size:6px}
   .tl-lbl{font-size:8px}
@@ -333,11 +335,13 @@ button:focus-visible{outline:2px solid var(--amber-b);outline-offset:2px}
 .thread-back-btn{background:none;border:none;padding:0;cursor:pointer;font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:var(--amber-b);text-transform:uppercase;transition:opacity .15s}
 .thread-back-btn:hover{opacity:.7}
 .thread-active-title{font-family:'Cinzel Decorative',serif;font-size:14px;color:var(--amber-b);margin:10px 0 14px}
-.thread-steps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px}
-.thread-step{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border:1px solid var(--bdr2);border-radius:3px;font-size:12.5px;color:var(--txt2)}
-.thread-step-yr{font-family:'Cinzel',serif;font-size:9.5px;color:var(--amber-b);white-space:nowrap;margin-top:2px;flex-shrink:0;min-width:56px}
+.thread-steps-grid{display:flex;flex-direction:column;align-items:center;padding:4px 0 16px}
+.thread-step{width:min(360px,90%);text-align:center;padding:10px 14px;border:1px solid var(--bdr2);border-radius:4px;font-size:12.5px;color:var(--txt2);background:var(--panel2)}
+.thread-step-yr{font-family:'Cinzel',serif;font-size:9.5px;color:var(--amber-b);margin-bottom:4px}
 .thread-step-txt{line-height:1.6;color:var(--txt2)}
-.thread-step-civ{font-family:'Cinzel',serif;font-size:9.5px;color:var(--amber-b);margin-bottom:3px}
+.thread-step-civ{font-family:'Cinzel',serif;font-size:9.5px;color:var(--amber-b);margin-bottom:4px}
+.thread-chain-link{display:flex;flex-direction:column;align-items:center;padding:2px 0;color:var(--amber-b);opacity:.6}
+.thread-chain-line{width:1px;height:8px;background:var(--amber-b);opacity:.4}
 
 /* ── COMPARE MODE ── */
 .compare-wrap{display:flex;gap:0;height:100%;width:100%}
@@ -433,6 +437,67 @@ button:focus-visible{outline:2px solid var(--amber-b);outline-offset:2px}
 /* When herstory active, style the mode bar slightly */
 body.herstory .mode-btn.active{background:rgba(192,96,160,.15);color:#c060a0}
 body.herstory .hdr{border-bottom-color:rgba(192,96,160,.3)}
+
+/* ── CLUSTER PICKER ── */
+#cluster-picker{
+  position:fixed;z-index:500;
+  background:var(--panel);border:1px solid var(--bdr);
+  border-radius:4px;padding:10px;min-width:180px;max-width:240px;
+  box-shadow:0 8px 32px var(--shadow);
+  display:none;
+}
+#cluster-picker.visible{display:block}
+.cluster-title{font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:2px;
+  color:var(--txt3);text-transform:uppercase;margin-bottom:8px;padding-bottom:6px;
+  border-bottom:1px solid var(--bdr2)}
+.cluster-btn{display:flex;align-items:center;gap:8px;width:100%;background:none;
+  border:none;padding:6px 4px;cursor:pointer;text-align:left;
+  border-bottom:1px solid var(--bdr2);transition:background .12s}
+.cluster-btn:last-child{border-bottom:none}
+.cluster-btn:hover,.cluster-btn:active{background:var(--amber-xx)}
+.cluster-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.cluster-nm{font-family:'Cinzel',serif;font-size:10px;color:var(--txt2);letter-spacing:.3px}
+.cluster-sb{font-size:9px;color:var(--txt3);margin-top:1px}
+
+
+/* ── MAP ZOOM/PAN ── */
+#wsvg{touch-action:none;user-select:none;-webkit-user-select:none}
+.map-zoom-ctrl{position:absolute;bottom:8px;right:8px;display:flex;flex-direction:column;gap:3px;z-index:50}
+.map-zoom-btn{width:28px;height:28px;background:var(--panel);border:1px solid var(--bdr);color:var(--amber-b);
+  font-size:16px;cursor:pointer;border-radius:3px;display:flex;align-items:center;justify-content:center;
+  font-family:'Cinzel',serif;transition:all .15s}
+.map-zoom-btn:hover{background:var(--panel2);border-color:var(--amber)}
+.cluster-hint{position:absolute;bottom:44px;left:50%;transform:translateX(-50%);
+  font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:var(--amber-b);
+  background:var(--panel);border:1px solid var(--bdr);padding:4px 12px;border-radius:20px;
+  opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;z-index:51}
+.cluster-hint.show{opacity:1}
+
+/* ── CLUSTER PICKER ── */
+#cluster-picker{
+  position:fixed;z-index:900;background:var(--panel);
+  border:1px solid var(--bdr);border-radius:6px;
+  min-width:180px;max-width:260px;max-height:320px;overflow-y:auto;
+  box-shadow:0 8px 32px rgba(0,0,0,.6);
+  display:none;
+}
+#cluster-picker.open{display:block}
+#cluster-picker-hdr{
+  font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;
+  color:var(--txt3);padding:8px 12px 6px;
+  border-bottom:1px solid var(--bdr2);text-transform:uppercase;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.cluster-item{
+  display:flex;align-items:center;gap:10px;padding:9px 12px;
+  cursor:pointer;border-bottom:1px solid var(--bdr2);
+  transition:background .12s;
+}
+.cluster-item:last-child{border-bottom:none}
+.cluster-item:hover,.cluster-item:active{background:var(--panel2)}
+.cluster-item-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:#e8251a}
+.cluster-item-nm{font-family:'Cinzel',serif;font-size:11px;color:var(--txt);flex:1}
+.cluster-item-sb{font-size:10px;color:var(--txt3);margin-top:1px}
 </style>
 </head>
 <body>
@@ -484,8 +549,9 @@ body.herstory .hdr{border-bottom-color:rgba(192,96,160,.3)}
 <div class="share-toast" id="share-toast">Link copied to clipboard</div>
 
 <div class="main">
+  <div class="map-tl-col">
   <div class="map-c">
-    <svg id="wsvg" viewBox="0 0 1000 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="World map with civilization markers" onclick="mapClick(event)" style="cursor:pointer">
+    <svg id="wsvg" viewBox="0 0 1000 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="World map with civilization markers" style="cursor:pointer">
       <defs>
 
         <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
@@ -527,18 +593,12 @@ body.herstory .hdr{border-bottom-color:rgba(192,96,160,.3)}
       <!-- Labels (non-interactive) -->
       <g id="label-layer" pointer-events="none"></g>
     </svg>
-    <div class="hint">CLICK A CIVILIZATION TO EXPLORE  ·  DRAG TIMELINE TO TRAVEL THROUGH TIME</div>
+    <div class="hint" id="map-hint">
+      <span id="map-hint-text">TAP A CIVILIZATION  ·  PINCH TO ZOOM  ·  DRAG TO PAN  ·  DRAG TIMELINE TO TIME TRAVEL</span>
+      <button id="map-reset-btn" onclick="resetMapZoom()" style="display:none;font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;color:var(--amber-b);background:none;border:1px solid var(--bdr);padding:2px 8px;border-radius:10px;cursor:pointer;margin-left:10px;white-space:nowrap">⊙ RESET ZOOM</button>
+    </div>
   </div>
-
-  <div class="info-panel" id="info-panel" role="complementary" aria-label="Civilization details">
-    <div class="sheet-handle" onclick="closeMobileSheet()"></div>
-    <div id="drawer-top"></div>
-    <div id="drawer-content"></div>
-  </div>
-  <button class="mob-map-btn hidden" id="mob-map-btn" onclick="closeMobileSheet()">◎ Map</button>
-</div>
-
-<div class="tl-wrap" role="navigation" aria-label="Timeline">
+  <div class="tl-wrap" role="navigation" aria-label="Timeline">
   <svg id="density-bar" aria-label="Civilization density over time"></svg>
   <div class="era-bands" id="era-bands"></div>
   <div class="tl-lbls">
@@ -556,6 +616,15 @@ body.herstory .hdr{border-bottom-color:rgba(192,96,160,.3)}
     <input type="range" class="tl-range" id="tl" min="0" max="1000" value="0" step="1" aria-label="Timeline year" aria-valuemin="-65000" aria-valuemax="2024" aria-valuenow="-65000">
   </div>
 </div>
+  </div><!-- /map-tl-col -->
+
+  <div class="info-panel" id="info-panel" role="complementary" aria-label="Civilization details">
+    <div id="drawer-top"></div>
+    <div id="drawer-content"></div>
+  </div>
+  <button class="mob-map-btn hidden" id="mob-map-btn" onclick="closeMobileSheet()">◎ Map</button>
+</div>
+
 
 <script>
 const LENSES=[
@@ -2944,7 +3013,7 @@ const DIPLOMATIC=[
   {from:'ottoman',to:'medieval',year:1533,title:'Franco-Ottoman Alliance',desc:'King Francis I of France and Sultan Suleiman the Magnificent formed the first major alliance between a Christian and Muslim power — a geopolitical scandal in Europe. The alliance provided France with Ottoman naval support against the Habsburgs and Ottoman merchants access to French ports.'},
   {id:'akkadian',fp:{mil:9,com:7,art:7,sci:8,reach:7,lon:2},
    music:{scale:'lydian',root:55,tempo:58,timbre:'pluck',rhythm:[1,0,0,1,0,0,1,0],reverb:.5,artifact:'Lyres depicted in Akkadian cylinder seals; percussion ensemble for royal courts documented in Ur III texts; tigi hymns — longest surviving cuneiform musical compositions'},
-   lon:44,lat:33,nm:'Akkadian Empire',sb:'World\'s First Empire · Mesopotamia · 2334–2154 BCE',x:573,y:194,s:-2334,e:-2154,
+   lon:46,lat:35,nm:'Akkadian Empire',sb:'World\'s First Empire · Mesopotamia · 2334–2154 BCE',x:573,y:194,s:-2334,e:-2154,
    conns:['mesopotamia','egypt','hittites'],
    overview:'Sargon of Akkad founded the world\'s first empire around 2334 BCE, unifying the Sumerian city-states under a single administration stretching from the Persian Gulf to the Mediterranean. His daughter Enheduanna became the world\'s first named author — a poet-priestess whose hymns to Inanna are the oldest attributed literary works in history. The Akkadian Empire invented imperial governance: standardised weights and measures, a professional standing army, appointed governors replacing local kings, and Akkadian as the first diplomatic lingua franca. When it collapsed around 2154 BCE — possibly from the world\'s first documented climate catastrophe, a 300-year drought — it had already transmitted the idea of empire to every subsequent Near Eastern civilisation.',
    d:{
@@ -5142,11 +5211,15 @@ function renderMap(){
   });
   // Pass 1: decorative rings — pointer-events:none, never intercept clicks
   civData.filter(Boolean).forEach(({c,on,isSel,mcol,op,cx,cy})=>{
+    const _zr=1000/_vbW;
+    const _rR=Math.max(4,(16/_zr)).toFixed(1);
+    const _pR=Math.max(2,(6/_zr)).toFixed(1);
+    const _pMax=Math.max(5,(16/_zr)).toFixed(1);
     rings+=`<g opacity="${op}" pointer-events="none">
-      <circle cx="${cx}" cy="${cy}" r="16" fill="none" stroke="${mcol}" stroke-width=".5" opacity=".15"/>
-      <circle cx="${cx}" cy="${cy}" r="10" fill="${mcol}" fill-opacity=".06"/>
-      ${on?`<circle cx="${cx}" cy="${cy}" r="6" fill="${mcol}" opacity=".45">
-        <animate attributeName="r" values="6;16;6" dur="2.8s" repeatCount="indefinite"/>
+      <circle cx="${cx}" cy="${cy}" r="${_rR}" fill="none" stroke="${mcol}" stroke-width=".5" opacity=".15"/>
+      <circle cx="${cx}" cy="${cy}" r="${(Math.max(3,10/_zr)).toFixed(1)}" fill="${mcol}" fill-opacity=".06"/>
+      ${on?`<circle cx="${cx}" cy="${cy}" r="${_pR}" fill="${mcol}" opacity=".45">
+        <animate attributeName="r" values="${_pR};${_pMax};${_pR}" dur="2.8s" repeatCount="indefinite"/>
         <animate attributeName="opacity" values=".45;0;.45" dur="2.8s" repeatCount="indefinite"/>
       </circle>`:''}
     </g>`;
@@ -5155,11 +5228,16 @@ function renderMap(){
   const sorted=[...civData].filter(Boolean).sort((a,b)=>a.isSel?1:b.isSel?-1:0);
   sorted.forEach(({c,on,isSel,mcol,op,cx,cy})=>{
     if(on){
+      // Scale dot radius inversely with zoom so screen size stays ~constant
+      const zr=1000/_vbW; // zoom ratio: 1=full, 6=max
+      const dotR=Math.max(2, (isSel?9:7)/zr);
+      const ringR=Math.max(3, 16/zr);
+      const pulseMax=Math.max(8, 16/zr);
       dots+=`<g role="button" tabindex="0" data-civ="${c.id}"
           aria-label="${c.nm} — click to explore"
           onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();civClick('${c.id}')}"
           opacity="${op}" pointer-events="none">
-          <circle cx="${cx}" cy="${cy}" r="${isSel?9:7}"
+          <circle cx="${cx}" cy="${cy}" r="${dotR.toFixed(1)}"
             fill="${mcol}" filter="url(#glow${isSel?'2':''})"
           />
         </g>`;
@@ -5204,13 +5282,7 @@ function civClick(id){
   navigateToCiv(id);
 }
 
-function renderEnhancedSpanBar(c){
-  const MIN=-65000,MAX=2024,total=MAX-MIN;
-  const left=Math.max(0,(c.s-MIN)/total*100);
-  const width=Math.min(100-left,(c.e-c.s)/total*100);
-  return `<div class="civ-span-bar"><div class="civ-span-fill" style="left:${left.toFixed(1)}%;width:${width.toFixed(1)}%"></div></div>
-  <div class="civ-span-lbls"><span>${fmt(c.s)}</span><span>${fmt(c.e)}</span></div>`;
-}
+
 
 function renderDrawerContent(){
   const c=sel;
@@ -5457,6 +5529,7 @@ function init(){
       renderMap(); // re-render markers with correct projection
     })
     .catch(()=>console.warn('World map data unavailable — using fallback'));
+  initMapInteraction();
 }
 
 
@@ -5554,18 +5627,25 @@ function renderThreadSteps(concept){
   if(!steps)return;
   const chain=getChain(concept);
   if(!chain.length){steps.innerHTML='';return;}
-  steps.innerHTML=
-    '<div class="thread-steps-grid">'+
-    chain.map(t=>{
-      const fc=CIVS.find(x=>x&&x.id===t.from),tc=CIVS.find(x=>x&&x.id===t.to);
-      return`<div class="thread-step">
-        <span class="thread-step-yr">${fmt(t.year)}</span>
-        <div>
-          <div class="thread-step-civ">${fc?fc.nm:'?'} → ${tc?tc.nm:'?'}</div>
-          <div class="thread-step-txt">${t.desc}</div>
-        </div>
-      </div>`;
-    }).join('')+
+  const LINK=`<div class="thread-chain-link">
+    <div class="thread-chain-line"></div>
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+    </svg>
+    <div class="thread-chain-line"></div>
+  </div>`;
+  const items=chain.map(t=>{
+    const fc=CIVS.find(x=>x&&x.id===t.from),tc=CIVS.find(x=>x&&x.id===t.to);
+    return`<div class="thread-step">
+      <div class="thread-step-yr">${fmt(t.year)}</div>
+      <div class="thread-step-civ">${fc?fc.nm:'?'} → ${tc?tc.nm:'?'}</div>
+      <div class="thread-step-txt">${t.desc}</div>
+    </div>`;
+  });
+  steps.innerHTML='<div class="thread-steps-grid">'+
+    items.join(LINK)+
     '</div>';
 }
 
@@ -6653,26 +6733,260 @@ function renderHerstoryDrawer(){
 
 function mapClick(e){
   try{
+    if(_wasDragging){_wasDragging=false;return;}
     const svg=document.getElementById('wsvg');
     const rect=svg.getBoundingClientRect();
-    const vb=svg.viewBox.baseVal;
-    const svgX=(e.clientX-rect.left)*(vb.width/rect.width);
-    const svgY=(e.clientY-rect.top)*(vb.height/rect.height);
-    // Use active civ set from renderMap, fall back to computing it
+    const src=e.touches?.[0]||e.changedTouches?.[0]||e;
+    const clientX=src.clientX, clientY=src.clientY;
+    const svgX=_vbX+(clientX-rect.left)*(_vbW/rect.width);
+    const svgY=_vbY+(clientY-rect.top)*(_vbH/rect.height);
+    const isTouch='ontouchstart' in window||navigator.maxTouchPoints>0;
+    // Zoom ratio: 1 = full view, 6.7 = max zoom
+    const zr=1000/_vbW;
+    // Tap radius shrinks with zoom so you get individual targets when zoomed
+    const thresh=(isTouch?55:35)/zr;
     const activeSet=window.ids_cache||new Set(CIVS.filter(c=>c&&active(c)).map(c=>c.id));
-    let best=null,bestDist=Infinity;
+    const candidates=[];
     CIVS.forEach(c=>{
       if(!c||!c.id||!activeSet.has(c.id))return;
       const pt=civPt(c);
       if(!pt||!isFinite(pt[0])||!isFinite(pt[1]))return;
       const d=Math.sqrt((pt[0]-svgX)**2+(pt[1]-svgY)**2);
-      if(d<bestDist){bestDist=d;best=c;}
+      if(d<thresh)candidates.push({c,d,pt});
     });
-    if(best&&best.id&&bestDist<28){civClick(best.id);}
+    if(!candidates.length)return;
+    candidates.sort((a,b)=>a.d-b.d);
+    const nearest=candidates[0];
+    const second=candidates[1];
+    // Skip cluster picker when zoomed in 2x+ — dots are large enough to tap individually
+    const isZoomedIn=zr>=2;
+    const neighbourDist=second?Math.sqrt((nearest.pt[0]-second.pt[0])**2+(nearest.pt[1]-second.pt[1])**2):Infinity;
+    const clusterSep=35/zr;
+    const isCluster=!isZoomedIn&&(candidates.length>=3||neighbourDist<clusterSep);
+    if(isCluster){
+      showClusterPicker(candidates.map(x=>x.c),clientX,clientY);
+    } else {
+      civClick(nearest.c.id);
+    }
   }catch(err){console.warn('mapClick err:',err);}
 }
 
+
+
+
+// ══════════════════════════════════════════════════════
+// MAP ZOOM / PAN
+// ══════════════════════════════════════════════════════
+let _vbX=0,_vbY=0,_vbW=1000,_vbH=520;
+let _dragging=false,_wasDragging=false,_lastX=0,_lastY=0,_dragDist=0;
+let _pinchDist=0;
+const VB_MIN_W=150, VB_MAX_W=1000;
+
+function _applyVB(){
+  const svg=document.getElementById('wsvg');
+  if(svg) svg.setAttribute('viewBox',`${_vbX} ${_vbY} ${_vbW} ${_vbH}`);
+  // Re-render markers so dot sizes adjust to zoom level
+  renderMap();
+}
+
+function zoomMap(factor, cx, cy){
+  // cx,cy = SVG coords to zoom toward (default: center)
+  cx = cx ?? (_vbX + _vbW/2);
+  cy = cy ?? (_vbY + _vbH/2);
+  const newW = Math.max(VB_MIN_W, Math.min(VB_MAX_W, _vbW/factor));
+  const newH = newW * (520/1000);
+  const scale = newW/_vbW;
+  _vbX = cx - (cx-_vbX)*scale;
+  _vbY = cy - (cy-_vbY)*scale;
+  _vbW = newW; _vbH = newH;
+  _clampVB();
+  _applyVB();
+  _updateZoomHint();
+}
+
+function resetMapZoom(){
+  _vbX=0;_vbY=0;_vbW=1000;_vbH=520;
+  _applyVB();
+  _hideClusterHint();
+  const btn=document.getElementById('map-reset-btn');
+  if(btn) btn.style.display='none';
+}
+
+function _clampVB(){
+  _vbX = Math.max(0, Math.min(1000-_vbW, _vbX));
+  _vbY = Math.max(0, Math.min(520-_vbH, _vbY));
+}
+
+function _updateZoomHint(){
+  const btn=document.getElementById('map-reset-btn');
+  if(btn) btn.style.display=_vbW<999?'inline-block':'none';
+  // legacy cluster-hint fallback
+  const hint=document.getElementById('cluster-hint');
+  if(hint&&_vbW<999){
+    hint.classList.add('show');
+    clearTimeout(hint._t);
+    hint._t=setTimeout(()=>hint.classList.remove('show'),3000);
+  }
+}
+
+function _hideClusterHint(){
+  const hint=document.getElementById('cluster-hint');
+  if(hint){hint.classList.remove('show');hint.style.pointerEvents='none';}
+}
+
+function showClusterHint(){
+  const hint=document.getElementById('cluster-hint');
+  if(!hint)return;
+  hint.textContent='Pinch or scroll to zoom in and separate';
+  hint.style.pointerEvents='none';
+  hint.classList.add('show');
+  clearTimeout(hint._t);
+  hint._t=setTimeout(()=>hint.classList.remove('show'),3000);
+}
+
+// Screen → SVG coords accounting for current viewBox
+function screenToSVG(clientX, clientY){
+  const svg=document.getElementById('wsvg');
+  const rect=svg.getBoundingClientRect();
+  return [
+    _vbX + (clientX-rect.left)*((_vbW)/rect.width),
+    _vbY + (clientY-rect.top)*((_vbH)/rect.height)
+  ];
+}
+
+// Mouse wheel zoom
+function _onWheel(e){
+  e.preventDefault();
+  const [svgX,svgY]=screenToSVG(e.clientX,e.clientY);
+  const factor = e.deltaY<0 ? 1.15 : 1/1.15;
+  zoomMap(factor, svgX, svgY);
+}
+
+// Mouse drag pan
+function _onMouseDown(e){
+  if(e.button!==0)return;
+  _dragging=true;_wasDragging=false;_dragDist=0; _lastX=e.clientX; _lastY=e.clientY;
+}
+function _onMouseMove(e){
+  if(!_dragging)return;
+  const svg=document.getElementById('wsvg');
+  const rect=svg.getBoundingClientRect();
+  const dx=(e.clientX-_lastX)*(_vbW/rect.width);
+  const dy=(e.clientY-_lastY)*(_vbH/rect.height);
+  _dragDist+=Math.abs(dx)+Math.abs(dy);
+  if(_dragDist>3)_wasDragging=true;
+  _vbX-=dx; _vbY-=dy;
+  _clampVB(); _applyVB();
+  _lastX=e.clientX; _lastY=e.clientY;
+}
+function _onMouseUp(){ if(_dragDist>5)_wasDragging=true; _dragging=false; _dragDist=0; }
+
+// Touch events
+let _touches={};
+let _tapStartX=0,_tapStartY=0,_tapMoved=false;
+function _onTouchStart(e){
+  Array.from(e.changedTouches).forEach(t=>{ _touches[t.identifier]={x:t.clientX,y:t.clientY}; });
+  if(Object.keys(_touches).length===1){
+    const t=e.changedTouches[0];
+    _lastX=t.clientX; _lastY=t.clientY;
+    _tapStartX=t.clientX; _tapStartY=t.clientY; _tapMoved=false;
+  } else if(Object.keys(_touches).length===2){
+    const pts=Object.values(_touches);
+    _pinchDist=Math.hypot(pts[1].x-pts[0].x, pts[1].y-pts[0].y);
+    _tapMoved=true; // multi-touch cancels tap
+  }
+}
+function _onTouchMove(e){
+  e.preventDefault();
+  const keys=Object.keys(_touches);
+  Array.from(e.changedTouches).forEach(t=>{ if(_touches[t.identifier]) _touches[t.identifier]={x:t.clientX,y:t.clientY}; });
+  
+  if(keys.length===1){
+    // Single finger pan
+    const t=e.changedTouches[0];
+    // Mark as moved if finger travelled > 8px (not a tap)
+    if(Math.hypot(t.clientX-_tapStartX, t.clientY-_tapStartY)>8) _tapMoved=true;
+    const svg=document.getElementById('wsvg');
+    const rect=svg.getBoundingClientRect();
+    const dx=(t.clientX-_lastX)*(_vbW/rect.width);
+    const dy=(t.clientY-_lastY)*(_vbH/rect.height);
+    _vbX-=dx; _vbY-=dy;
+    _clampVB(); _applyVB();
+    _lastX=t.clientX; _lastY=t.clientY;
+  } else if(keys.length===2){
+    // Pinch zoom
+    const pts=Object.values(_touches);
+    const newDist=Math.hypot(pts[1].x-pts[0].x, pts[1].y-pts[0].y);
+    if(_pinchDist>0){
+      const midX=(pts[0].x+pts[1].x)/2;
+      const midY=(pts[0].y+pts[1].y)/2;
+      const [svgX,svgY]=screenToSVG(midX,midY);
+      zoomMap(newDist/_pinchDist, svgX, svgY);
+    }
+    _pinchDist=newDist;
+  }
+}
+function _onTouchEnd(e){
+  const wasMulti=Object.keys(_touches).length>=2;
+  Array.from(e.changedTouches).forEach(t=>{ delete _touches[t.identifier]; });
+  _pinchDist=0;
+  // Fire mapClick only for single-finger taps (finger didn't move, no multi-touch)
+  if(!wasMulti && !_tapMoved && e.changedTouches.length===1){
+    mapClick(e);
+  }
+  _tapMoved=false;
+}
+
+function initMapInteraction(){
+  const svg=document.getElementById('wsvg');
+  if(!svg)return;
+  svg.addEventListener('wheel',_onWheel,{passive:false});
+  svg.addEventListener('mousedown',_onMouseDown);
+  window.addEventListener('mousemove',_onMouseMove);
+  window.addEventListener('mouseup',_onMouseUp);
+  svg.addEventListener('touchstart',_onTouchStart,{passive:false});
+  svg.addEventListener('touchmove',_onTouchMove,{passive:false});
+  svg.addEventListener('touchend',_onTouchEnd,{passive:false});
+  svg.addEventListener('click',function(e){if(_wasDragging){_wasDragging=false;return;}mapClick(e);});
+}
+
+// Auto-zoom cluster: if tap finds 3+ civs within 40px, zoom in instead of picking
+
+function showClusterPicker(civs, screenX, screenY){
+  const picker=document.getElementById('cluster-picker');
+  const list=document.getElementById('cluster-list');
+  if(!picker||!list)return;
+  list.innerHTML=civs.map(c=>`
+    <div class="cluster-item" onclick="closeClusterPicker();civClick('${c.id}')">
+      <div class="cluster-item-dot" style="background:${herstory?'#c060a0':'#e8251a'}"></div>
+      <div>
+        <div class="cluster-item-nm">${c.nm}</div>
+        <div class="cluster-item-sb">${c.sb||''}</div>
+      </div>
+    </div>`).join('');
+  // Position near tap but keep on screen
+  const pw=Math.min(260, window.innerWidth-20);
+  let left=screenX+8, top=screenY-20;
+  if(left+pw>window.innerWidth-10) left=screenX-pw-8;
+  if(top<10) top=10;
+  if(top+320>window.innerHeight-10) top=window.innerHeight-330;
+  picker.style.left=left+'px';
+  picker.style.top=top+'px';
+  picker.style.width=pw+'px';
+  picker.classList.add('open');
+}
+function closeClusterPicker(){
+  const p=document.getElementById('cluster-picker');
+  if(p) p.classList.remove('open');
+}
+
+document.addEventListener('click', function(e){
+  const picker=document.getElementById('cluster-picker');
+  if(picker&&picker.classList.contains('open')&&!picker.contains(e.target))
+    closeClusterPicker();
+});
 window.addEventListener('load',init);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeClusterPicker();});
 
 // ── THEME ──
 function applyTheme(t){
@@ -6715,5 +7029,14 @@ function updateTlFill(pct){
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+
+  <!-- Cluster picker popup -->
+  <div id="cluster-picker" role="dialog" aria-label="Select civilization">
+    <div id="cluster-picker-hdr">
+      <span>Select civilization</span>
+      <button onclick="closeClusterPicker()" style="background:none;border:none;color:var(--txt3);cursor:pointer;font-size:14px;padding:0 2px">✕</button>
+    </div>
+    <div id="cluster-list"></div>
+  </div>
 </body>
 </html>
