@@ -417,7 +417,7 @@ body.herstory .hdr{border-bottom-color:rgba(192,96,160,.3)}
 
 <div class="main">
   <div class="map-c">
-    <svg id="wsvg" viewBox="0 0 1000 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="World map with civilization markers">
+    <svg id="wsvg" viewBox="0 0 1000 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="World map with civilization markers" onclick="mapClick(event)" style="cursor:pointer">
       <defs>
 
         <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
@@ -2320,7 +2320,7 @@ const CIVS=[
     diffusion:'American cultural exports (Hollywood, rock music, fast food, blue jeans, the internet, English) as the most pervasive civilisational diffusion event since the Roman Empire; the American university model adopted globally; Silicon Valley\'s startup culture reshaping economies from London to Lagos; American constitutional design influencing 100+ constitutions.',
     migration:'The United States is the world\'s largest immigrant nation — founded by colonists, built by enslaved Africans, and continuously transformed by immigration waves that have successively reshaped its demographic character. The forced migration of 4 million enslaved people within the domestic slave trade (1790–1860) was as significant as transatlantic importation. The Great Migration (1910–1970) of 6 million African Americans from the South to northern cities created the demographic foundation for 20th-century Black political power and cultural production. Immigration waves — Irish (1840s), Chinese (1850s), Southern and Eastern European (1880–1920), Latin American and Asian (1965–present) — each arrived, were resisted, and eventually absorbed. America\'s immigration policy remains its most politically charged civilisational question: a nation of migrants arguing about migration.',
    }},
-,
+
 {id:'vedic',fp:{mil:6,com:6,art:8,sci:9,reach:5,lon:5},
    music:{scale:'phrygian',root:58,tempo:60,timbre:'drone',rhythm:[1,0,0,0,1,0,0,0],reverb:.6,artifact:'The Samaveda — one of the four Vedas — is entirely musical notation; the oldest notated vocal music in history. Vedic chant (Samagana) is UNESCO-listed as intangible heritage; the seven swaras (notes) of Indian music codified in Vedic texts'},
    lon:76,lat:28,nm:'Vedic Civilisation',sb:'Sacred India · 1500–500 BCE',x:668,y:222,s:-1500,e:-500,
@@ -2874,8 +2874,7 @@ const DIPLOMATIC=[
   {from:'china',to:'india',year:640,title:'Tang China-Harsha Diplomatic Exchange',desc:'Emperor Taizong sent Wang Xuance as ambassador to the court of King Harsha of Kanauj (640 CE). After Harsha\'s death and the murder of the Chinese mission by a usurper, Wang Xuance famously raised an army in Nepal and Tibet and returned to defeat the usurper — one of history\'s most extraordinary diplomatic incidents.'},
   {from:'aztec',to:'inca',year:1450,title:'Aztec-Inca Diplomatic Contact',desc:'While no definitive documentary evidence survives, trade goods of Andean and Mesoamerican origin found in both regions, and shared crop exchanges (including the potato reaching Mesoamerica), suggest contact networks between the hemisphere\'s two greatest empires in the century before European contact.'},
   {from:'ottoman',to:'medieval',year:1533,title:'Franco-Ottoman Alliance',desc:'King Francis I of France and Sultan Suleiman the Magnificent formed the first major alliance between a Christian and Muslim power — a geopolitical scandal in Europe. The alliance provided France with Ottoman naval support against the Habsburgs and Ottoman merchants access to French ports.'},
-,
-{id:'akkadian',fp:{mil:9,com:7,art:7,sci:8,reach:7,lon:2},
+  {id:'akkadian',fp:{mil:9,com:7,art:7,sci:8,reach:7,lon:2},
    music:{scale:'lydian',root:55,tempo:58,timbre:'pluck',rhythm:[1,0,0,1,0,0,1,0],reverb:.5,artifact:'Lyres depicted in Akkadian cylinder seals; percussion ensemble for royal courts documented in Ur III texts; tigi hymns — longest surviving cuneiform musical compositions'},
    lon:44,lat:33,nm:'Akkadian Empire',sb:'World\'s First Empire · Mesopotamia · 2334–2154 BCE',x:573,y:194,s:-2334,e:-2154,
    conns:['mesopotamia','egypt','hittites'],
@@ -4985,7 +4984,7 @@ function toggleLens(id){
     const col=lenses.size?getLensCol():OVERVIEW_COL;
     const actIds=new Set(CIVS.filter(x=>active(x)).map(x=>x.id));
     const connHTML=c.conns.length?`<div class="conn-hdr" id="conn-hdr">Historical connections</div>`+c.conns.map(cid=>{
-      const o=CIVS.find(x=>x.id===cid);if(!o)return'';
+      const o=CIVS.find(x=>x&&x.id===cid);if(!o)return'';
       const isA=actIds.has(cid);
       const badge=isA?'ACTIVE':'→ JUMP';
       const tip=isA?`View ${o.nm} (active in this era)`:`Jump to ${o.nm} (${fmt(o.s)} – ${fmt(o.e)})`;
@@ -5037,6 +5036,7 @@ function civPt(c){
 
 function renderMap(){
   const ids=new Set(CIVS.filter(c=>active(c)).map(c=>c.id));
+  window.ids_cache=ids;
   const col=lenses.size?getLensCol():OVERVIEW_COL;
 
   const drawn=new Set();
@@ -5047,7 +5047,7 @@ function renderMap(){
       const k=[c.id,id].sort().join('-');
       if(drawn.has(k)||!ids.has(id))return;
       drawn.add(k);
-      const o=CIVS.find(x=>x.id===id);
+      const o=CIVS.find(x=>x&&x.id===id);
       if(!o)return;
       const [cx,cy]=civPt(c),[ox,oy]=civPt(o);
       const mx=(cx+ox)/2,my=Math.min(cy,oy)-28;
@@ -5087,12 +5087,10 @@ function renderMap(){
   const sorted=[...civData].filter(Boolean).sort((a,b)=>a.isSel?1:b.isSel?-1:0);
   sorted.forEach(({c,on,isSel,mcol,op,cx,cy})=>{
     if(on){
-      dots+=`<g role="button" tabindex="0" style="cursor:pointer"
+      dots+=`<g role="button" tabindex="0" data-civ="${c.id}"
           aria-label="${c.nm} — click to explore"
-          onclick="civClick('${c.id}')"
           onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();civClick('${c.id}')}"
-          opacity="${op}">
-          <circle cx="${cx}" cy="${cy}" r="${isSel?14:12}" fill="transparent"/>
+          opacity="${op}" pointer-events="none">
           <circle cx="${cx}" cy="${cy}" r="${isSel?9:7}"
             fill="${mcol}" filter="url(#glow${isSel?'2':''})"
           />
@@ -5109,7 +5107,7 @@ function renderMap(){
 }
 
 function navigateToCiv(id){
-  const c=CIVS.find(x=>x.id===id);
+  const c=CIVS.find(x=>x&&x.id===id);
   if(!c)return;
   if(mode==='whatif'){
     setWhatIf(id);
@@ -5173,7 +5171,7 @@ function renderDrawerContent(){
   const col=lenses.size?getLensCol():OVERVIEW_COL;
   const actIds=new Set(CIVS.filter(x=>active(x)).map(x=>x.id));
   const connHTML=c.conns.length?`<div class="conn-hdr">Historical connections</div>`+c.conns.map(id=>{
-    const o=CIVS.find(x=>x.id===id);if(!o)return'';
+    const o=CIVS.find(x=>x&&x.id===id);if(!o)return'';
     const isA=actIds.has(id);
     const badge=isA?'ACTIVE':'→ JUMP';
     const tip=isA?`View ${o.nm} (active in this era)`:`Jump to ${o.nm} (${fmt(o.s)} – ${fmt(o.e)})`;
@@ -5289,7 +5287,7 @@ function renderDrawer(){
   const col=lenses.size?getLensCol():OVERVIEW_COL;
   const actIds=new Set(CIVS.filter(x=>active(x)).map(x=>x.id));
   const connHTML=c.conns.length?`<div class="conn-hdr">Historical connections</div>`+c.conns.map(id=>{
-    const o=CIVS.find(x=>x.id===id);if(!o)return'';
+    const o=CIVS.find(x=>x&&x.id===id);if(!o)return'';
     const isA=actIds.has(id);
     const badge=isA?'ACTIVE':'→ JUMP';
     const tip=isA?`View ${o.nm} (active in this era)`:`Jump to ${o.nm} (${fmt(o.s)} – ${fmt(o.e)})`;
@@ -5459,7 +5457,7 @@ function renderThreadConceptList(){
       return`<button class="thread-concept-btn" onclick="activateThread('${c.replace(/'/g,"\\'")}')" >
         <span class="thread-concept-name">${c}</span>
         <span class="thread-concept-chain">${chain.map(t=>{
-          const fc=CIVS.find(x=>x.id===t.from),tc=CIVS.find(x=>x.id===t.to);
+          const fc=CIVS.find(x=>x&&x.id===t.from),tc=CIVS.find(x=>x&&x.id===t.to);
           return(fc?fc.nm:'?')+' → '+(tc?tc.nm:'?');
         }).join('<br>')}</span>
       </button>`;
@@ -5491,7 +5489,7 @@ function renderThreadSteps(concept){
   steps.innerHTML=
     '<div class="thread-steps-grid">'+
     chain.map(t=>{
-      const fc=CIVS.find(x=>x.id===t.from),tc=CIVS.find(x=>x.id===t.to);
+      const fc=CIVS.find(x=>x&&x.id===t.from),tc=CIVS.find(x=>x&&x.id===t.to);
       return`<div class="thread-step">
         <span class="thread-step-yr">${fmt(t.year)}</span>
         <div>
@@ -5515,7 +5513,7 @@ function renderThreadPaths(concept){
   let out='<defs><marker id="tarrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#f0d060" opacity=".9"/></marker></defs>';
   const drawn=[];
   chain.forEach(t=>{
-    const fc=CIVS.find(x=>x.id===t.from),tc=CIVS.find(x=>x.id===t.to);
+    const fc=CIVS.find(x=>x&&x.id===t.from),tc=CIVS.find(x=>x&&x.id===t.to);
     if(!fc||!tc)return;
     const [fx,fy]=civPt(fc),[tx,ty]=civPt(tc);
     const mx=(fx+tx)/2,my=Math.min(fy,ty)-44;
@@ -5551,7 +5549,7 @@ function renderThreadPaths(concept){
 
 // ── COMPARE MODE ──
 function addToCompare(id){
-  const c=CIVS.find(x=>x.id===id);
+  const c=CIVS.find(x=>x&&x.id===id);
   if(!c)return;
   if(!sel){sel=c;mode='compare';}
   else{sel2=c;mode='compare';}
@@ -5657,8 +5655,8 @@ function decodeState(){
       year=y;
       document.getElementById('tl').value=y;
     }
-    if(params.get('c')){sel=CIVS.find(x=>x.id===params.get('c'))||null;}
-    if(params.get('c2')){sel2=CIVS.find(x=>x.id===params.get('c2'))||null;}
+    if(params.get('c')){sel=CIVS.find(x=>x&&x.id===params.get('c'))||null;}
+    if(params.get('c2')){sel2=CIVS.find(x=>x&&x.id===params.get('c2'))||null;}
     if(params.get('l')){params.get('l').split(',').forEach(id=>lenses.add(id));}
     if(params.get('m'))mode=params.get('m');
     if(params.get('t'))activeThread=params.get('t');
@@ -6140,7 +6138,7 @@ function renderDiplomaticLayer(){
   const ids=new Set(CIVS.filter(c=>active(c)).map(c=>c.id));
   let dl='';
   DIPLOMATIC.forEach(d=>{
-    const fc=CIVS.find(x=>x.id===d.from),tc=CIVS.find(x=>x.id===d.to);
+    const fc=CIVS.find(x=>x&&x.id===d.from),tc=CIVS.find(x=>x&&x.id===d.to);
     if(!fc||!tc||!ids.has(d.from)||!ids.has(d.to))return;
     const [fx,fy]=civPt(fc),[tx,ty]=civPt(tc);
     const mx=(fx+tx)/2,my=Math.min(fy,ty)-36;
@@ -6160,7 +6158,7 @@ function renderDiplomaticSection(c){
   if(!relevant.length)return'';
   return`<div class="conn-hdr">Diplomatic Record</div>`+
     relevant.map(d=>{
-      const other=CIVS.find(x=>x.id===(d.from===c.id?d.to:d.from));
+      const other=CIVS.find(x=>x&&x.id===(d.from===c.id?d.to:d.from));
       return`<div style="padding:8px 0;border-bottom:1px solid var(--bdr2)">
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
           <span class="diplom-icon"></span>
@@ -6183,7 +6181,7 @@ function renderWhatIfPaths(){
   if(!layer){return;}
   if(!whatifCiv){layer.innerHTML='';return;}
 
-  const c=CIVS.find(x=>x.id===whatifCiv);
+  const c=CIVS.find(x=>x&&x.id===whatifCiv);
   if(!c){layer.innerHTML='';return;}
 
   const directOut=TRANSMISSIONS.filter(t=>t.from===c.id);
@@ -6195,7 +6193,7 @@ function renderWhatIfPaths(){
 
   // Direct broken paths — animated red fading lines
   directOut.forEach((t,i)=>{
-    const tc=CIVS.find(x=>x.id===t.to);
+    const tc=CIVS.find(x=>x&&x.id===t.to);
     if(!tc)return;
     const [tx,ty]=civPt(tc);
     const mx=(cx+tx)/2, my=Math.min(cy,ty)-40;
@@ -6211,7 +6209,7 @@ function renderWhatIfPaths(){
 
   // Downstream broken paths — dimmer orange dashes
   downstream.forEach((t,j)=>{
-    const fc=CIVS.find(x=>x.id===t.from),tc=CIVS.find(x=>x.id===t.to);
+    const fc=CIVS.find(x=>x&&x.id===t.from),tc=CIVS.find(x=>x&&x.id===t.to);
     if(!fc||!tc)return;
     const [fx,fy]=civPt(fc),[tx,ty]=civPt(tc);
     const mx=(fx+tx)/2,my=Math.min(fy,ty)-24;
@@ -6276,7 +6274,7 @@ function renderWhatIfDrawer(){
       {id:'rome',         why:'Latin, Roman law and the institutional Church'},
       {id:'byzantium',    why:'Preserved the Greek texts that triggered the Renaissance'},
     ].map(s=>{
-      const c=CIVS.find(x=>x.id===s.id);
+      const c=CIVS.find(x=>x&&x.id===s.id);
       if(!c)return'';
       return`<button class="whatif-civ-btn" onclick="setWhatIf('${c.id}')">
         <div style="flex:1">
@@ -6289,7 +6287,7 @@ function renderWhatIfDrawer(){
     return;
   }
 
-  const c=CIVS.find(x=>x.id===whatifCiv);
+  const c=CIVS.find(x=>x&&x.id===whatifCiv);
   if(!c){dc.innerHTML='';return;}
 
   const directOut=TRANSMISSIONS.filter(t=>t.from===c.id);
@@ -6326,7 +6324,7 @@ function renderWhatIfDrawer(){
   <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:#e8251a;text-transform:uppercase;margin-bottom:8px">Direct transmissions broken</div>
   ${directOut.length
     ? directOut.map(t=>{
-        const tc=CIVS.find(x=>x.id===t.to);
+        const tc=CIVS.find(x=>x&&x.id===t.to);
         return`<div style="padding:9px 0;border-bottom:1px solid var(--bdr2)">
           <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px;flex-wrap:wrap">
             <span style="font-family:'Cinzel',serif;font-size:10px;color:#e8251a;text-decoration:line-through;opacity:.8">${t.concept}</span>
@@ -6342,7 +6340,7 @@ function renderWhatIfDrawer(){
   <div style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;color:var(--amber-b);text-transform:uppercase;margin:16px 0 8px">Downstream unravelling</div>
   <div style="font-size:12px;color:var(--txt3);margin-bottom:10px;font-style:italic;line-height:1.6">These transmissions were only possible because of what ${c.nm} first made happen:</div>
   ${downstream.map(t=>{
-    const fc=CIVS.find(x=>x.id===t.from),tc2=CIVS.find(x=>x.id===t.to);
+    const fc=CIVS.find(x=>x&&x.id===t.from),tc2=CIVS.find(x=>x&&x.id===t.to);
     return`<div style="padding:6px 0;border-bottom:1px solid var(--bdr2);font-size:12px">
       <span style="color:var(--amber-b);font-family:'Cinzel',serif;font-size:9.5px">${t.concept}</span>
       <span style="color:var(--txt3)"> · ${fc?fc.nm:'?'} → ${tc2?tc2.nm:'?'} · ${fmt(t.year)}</span>
@@ -6543,7 +6541,7 @@ function renderHerstoryDrawer(){
       {civ:'japan', nm:'Murasaki Shikibu', yr:978, desc:'Wrote the world\'s first novel: The Tale of Genji'},
       {civ:'mesopotamia', nm:'Enheduanna', yr:-2285, desc:'World\'s first named author — 2,285 BCE'},
     ].map(w=>{
-      const c=CIVS.find(x=>x.id===w.civ);
+      const c=CIVS.find(x=>x&&x.id===w.civ);
       return c?`<button onclick="navigateToCiv('${c.id}')" 
         style="width:100%;background:none;border:1px solid rgba(192,96,160,.25);padding:9px 12px;text-align:left;cursor:pointer;margin-bottom:4px;border-radius:2px;transition:all .15s"
         onmouseover="this.style.background='rgba(192,96,160,.08)'" onmouseout="this.style.background='none'">
@@ -6583,6 +6581,28 @@ function renderHerstoryDrawer(){
 
 
 
+
+
+function mapClick(e){
+  try{
+    const svg=document.getElementById('wsvg');
+    const rect=svg.getBoundingClientRect();
+    const vb=svg.viewBox.baseVal;
+    const svgX=(e.clientX-rect.left)*(vb.width/rect.width);
+    const svgY=(e.clientY-rect.top)*(vb.height/rect.height);
+    // Use active civ set from renderMap, fall back to computing it
+    const activeSet=window.ids_cache||new Set(CIVS.filter(c=>c&&active(c)).map(c=>c.id));
+    let best=null,bestDist=Infinity;
+    CIVS.forEach(c=>{
+      if(!c||!c.id||!activeSet.has(c.id))return;
+      const pt=civPt(c);
+      if(!pt||!isFinite(pt[0])||!isFinite(pt[1]))return;
+      const d=Math.sqrt((pt[0]-svgX)**2+(pt[1]-svgY)**2);
+      if(d<bestDist){bestDist=d;best=c;}
+    });
+    if(best&&best.id&&bestDist<28){civClick(best.id);}
+  }catch(err){console.warn('mapClick err:',err);}
+}
 
 window.addEventListener('load',init);
 
