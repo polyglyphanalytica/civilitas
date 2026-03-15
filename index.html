@@ -649,7 +649,7 @@ body.herstory .hdr{border-bottom-color:rgba(192,96,160,.3)}
       <g id="label-layer" pointer-events="none"></g>
     </svg>
     <div class="hint" id="map-hint">
-      <span id="map-hint-text">TAP A CIVILIZATION  ·  PINCH TO ZOOM  ·  DRAG TO PAN  ·  DRAG TIMELINE TO TIME TRAVEL</span>
+      <span id="map-hint-text">TAP A CIVILIZATION  ·  PINCH TO ZOOM  ·  DRAG TO PAN</span>
       <button id="map-reset-btn" onclick="resetMapZoom()" style="display:none;font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;color:var(--amber-b);background:none;border:1px solid var(--bdr);padding:2px 8px;border-radius:10px;cursor:pointer;margin-left:10px;white-space:nowrap">⊙ RESET ZOOM</button>
     </div>
   </div>
@@ -6858,16 +6858,11 @@ function renderHerstoryDrawer(){
 function mapClick(e){
   try{
     if(_wasDragging){_wasDragging=false;return;}
-    const svg=document.getElementById('wsvg');
-    const rect=svg.getBoundingClientRect();
     const src=e.touches?.[0]||e.changedTouches?.[0]||e;
     const clientX=src.clientX, clientY=src.clientY;
-    const svgX=_vbX+(clientX-rect.left)*(_vbW/rect.width);
-    const svgY=_vbY+(clientY-rect.top)*(_vbH/rect.height);
+    const [svgX,svgY]=screenToSVG(clientX,clientY);
     const isTouch='ontouchstart' in window||navigator.maxTouchPoints>0;
-    // Zoom ratio: 1 = full view, 6.7 = max zoom
     const zr=1000/_vbW;
-    // Tap radius shrinks with zoom so you get individual targets when zoomed
     const thresh=(isTouch?55:35)/zr;
     const activeSet=window.ids_cache||new Set(CIVS.filter(c=>c&&active(c)).map(c=>c.id));
     const candidates=[];
@@ -6882,7 +6877,6 @@ function mapClick(e){
     candidates.sort((a,b)=>a.d-b.d);
     const nearest=candidates[0];
     const second=candidates[1];
-    // Skip cluster picker when zoomed in 2x+ — dots are large enough to tap individually
     const isZoomedIn=zr>=2;
     const neighbourDist=second?Math.sqrt((nearest.pt[0]-second.pt[0])**2+(nearest.pt[1]-second.pt[1])**2):Infinity;
     const clusterSep=35/zr;
@@ -6969,12 +6963,25 @@ function showClusterHint(){
 }
 
 // Screen → SVG coords accounting for current viewBox
+// ── Letterbox-aware coordinate helpers ──────────────────
+// SVG uses preserveAspectRatio="xMidYMid meet": content is scaled uniformly
+// to fit the element, centred with padding bars on the shorter axis.
+// All screen→SVG transforms must account for those bars.
+function _svgScale(rect){
+  return Math.min(rect.width/_vbW, rect.height/_vbH);
+}
+function _svgOffsets(rect, scale){
+  return [(rect.width -_vbW*scale)/2, (rect.height-_vbH*scale)/2];
+}
+
 function screenToSVG(clientX, clientY){
   const svg=document.getElementById('wsvg');
   const rect=svg.getBoundingClientRect();
+  const s=_svgScale(rect);
+  const [xOff,yOff]=_svgOffsets(rect,s);
   return [
-    _vbX + (clientX-rect.left)*((_vbW)/rect.width),
-    _vbY + (clientY-rect.top)*((_vbH)/rect.height)
+    _vbX + (clientX-rect.left-xOff)/s,
+    _vbY + (clientY-rect.top -yOff)/s
   ];
 }
 
@@ -6995,8 +7002,9 @@ function _onMouseMove(e){
   if(!_dragging)return;
   const svg=document.getElementById('wsvg');
   const rect=svg.getBoundingClientRect();
-  const dx=(e.clientX-_lastX)*(_vbW/rect.width);
-  const dy=(e.clientY-_lastY)*(_vbH/rect.height);
+  const s=_svgScale(rect);
+  const dx=(e.clientX-_lastX)/s;
+  const dy=(e.clientY-_lastY)/s;
   _dragDist+=Math.abs(dx)+Math.abs(dy);
   if(_dragDist>3)_wasDragging=true;
   _vbX-=dx; _vbY-=dy;
@@ -7032,8 +7040,9 @@ function _onTouchMove(e){
     if(Math.hypot(t.clientX-_tapStartX, t.clientY-_tapStartY)>8) _tapMoved=true;
     const svg=document.getElementById('wsvg');
     const rect=svg.getBoundingClientRect();
-    const dx=(t.clientX-_lastX)*(_vbW/rect.width);
-    const dy=(t.clientY-_lastY)*(_vbH/rect.height);
+    const s=_svgScale(rect);
+    const dx=(t.clientX-_lastX)/s;
+    const dy=(t.clientY-_lastY)/s;
     _vbX-=dx; _vbY-=dy;
     _clampVB(); _applyVB();
     _lastX=t.clientX; _lastY=t.clientY;
