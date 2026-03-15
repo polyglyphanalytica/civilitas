@@ -6883,7 +6883,7 @@ function _onMouseUp(){ if(_dragDist>5)_wasDragging=true; _dragging=false; _dragD
 
 // Touch events
 let _touches={};
-let _tapStartX=0,_tapStartY=0,_tapMoved=false;
+let _tapStartX=0,_tapStartY=0,_tapMoved=false,_touchFiredAt=0;
 function _onTouchStart(e){
   Array.from(e.changedTouches).forEach(t=>{ _touches[t.identifier]={x:t.clientX,y:t.clientY}; });
   if(Object.keys(_touches).length===1){
@@ -6932,6 +6932,7 @@ function _onTouchEnd(e){
   _pinchDist=0;
   // Fire mapClick only for single-finger taps (finger didn't move, no multi-touch)
   if(!wasMulti && !_tapMoved && e.changedTouches.length===1){
+    _touchFiredAt=Date.now();
     mapClick(e);
   }
   _tapMoved=false;
@@ -6947,7 +6948,7 @@ function initMapInteraction(){
   svg.addEventListener('touchstart',_onTouchStart,{passive:false});
   svg.addEventListener('touchmove',_onTouchMove,{passive:false});
   svg.addEventListener('touchend',_onTouchEnd,{passive:false});
-  svg.addEventListener('click',function(e){if(_wasDragging){_wasDragging=false;return;}mapClick(e);});
+  svg.addEventListener('click',function(e){if(_wasDragging){_wasDragging=false;return;}if(Date.now()-(_touchFiredAt||0)<500)return;mapClick(e);});
 }
 
 // Auto-zoom cluster: if tap finds 3+ civs within 40px, zoom in instead of picking
@@ -6956,6 +6957,7 @@ function showClusterPicker(civs, screenX, screenY){
   const picker=document.getElementById('cluster-picker');
   const list=document.getElementById('cluster-list');
   if(!picker||!list)return;
+  picker._openedAt=Date.now();
   list.innerHTML=civs.map(c=>`
     <div class="cluster-item" onclick="closeClusterPicker();civClick('${c.id}')">
       <div class="cluster-item-dot" style="background:${herstory?'#c060a0':'#e8251a'}"></div>
@@ -6982,7 +6984,8 @@ function closeClusterPicker(){
 
 document.addEventListener('click', function(e){
   const picker=document.getElementById('cluster-picker');
-  if(picker&&picker.classList.contains('open')&&!picker.contains(e.target))
+  if(picker&&picker.classList.contains('open')&&!picker.contains(e.target)
+    &&(!picker._openedAt||Date.now()-picker._openedAt>350))
     closeClusterPicker();
 });
 window.addEventListener('load',init);
